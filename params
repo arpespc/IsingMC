@@ -1,0 +1,10 @@
+Nx : 15
+Ny : 15
+J1 : 0.00174
+J2 : 0.00086
+T : 0.000001
+S : 3
+Num_thermo : 1000
+Num_sample : 1000
+snapshot    :  0
+snap_interval : 100
