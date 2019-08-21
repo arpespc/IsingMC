@@ -9,6 +9,8 @@ boost::random::mt19937 rng(std::time(0));
 const double kb = 8.617333262145 * 1e-5 ; // Boltzman constant eV / K
 
 int main(int argc, char* argv[]) {
+    
+    // comand line options
     namespace  po = boost::program_options;
     po::options_description opts("options");
     opts.add_options()
@@ -23,7 +25,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    // params
+    // imput params
     std::map<std::string, double> params;
     read_para(params);
     const int Nx = (int) params["Nx"]; // number of size
@@ -49,22 +51,36 @@ int main(int argc, char* argv[]) {
         int mkdir = std::system(conmand.c_str());
         snap_interval = (int) params["snap_interval"];
     }
+    const bool output_chi = params["output_chi"];
+    const bool output_error = params["output_error"];
+    const double num_site =  Nx * Ny;
 
     // out put the basic input infomation
     std::cout << "############################## Critical Input Infomation #################################" << std::endl;
-    std::cout << "MC Temperature   : " << T << std::endl;
-    std::cout << "lattice size  Nx : " << Nx << std::endl;
-    std::cout << "lattice size  Ny : " << Ny << std::endl;
-    std::cout << "snapshot         : " << snapshot << std::endl;
-    std::cout << "snap_interval    : " << snap_interval << std::endl;
+    std::cout << "MC Temperature      : " << T << std::endl;
+    std::cout << "lattice size  Nx    : " << Nx << std::endl;
+    std::cout << "lattice size  Ny    : " << Ny << std::endl;
+    std::cout << "Number of site      : " << Ny << std::endl;
+    std::cout << "snapshot            : " << snapshot << std::endl;
+    std::cout << "snap_interval       : " << snap_interval << std::endl;
+    std::cout << "Thermo number       : " << Num_thermo << std::endl;
+    std::cout << "MC Sample number    : " << Num_sample << std::endl;
     std::cout << "##########################################################################################" << std::endl;
+
+    double Ms_sample = 0; // the magnetization  of one sample
+    // initial the the basic output 
+    Eigen::MatrixXd M_mat = Eigen::MatrixXd::Zero(Nx, Ny); // The total magetic moment of theh whole lattice = spin1 + spin2
+    double Ms = 0; // magnetization
+    double Ms2 = 0;
+    double chi = 0; // the magnetic susceptbility
+    double errorbar = 0;
 
     // Initial Spin  Configure
     std::array<Eigen::MatrixXi, 2> spin_lattice;
     Eigen::MatrixXi spin_conf = Eigen::MatrixXi::Zero(Nx, Ny);
     Eigen::MatrixXi spin_conf1 = Eigen::MatrixXi::Ones(Nx, Ny); // The spin configuration of of first sub lattice
     Eigen::MatrixXi spin_conf2 = Eigen::MatrixXi::Ones(Nx, Ny); // The spin configuration of the second sub lattice
-    Eigen::MatrixXd M = Eigen::MatrixXd::Zero(Nx, Ny); // The total magetic moment of theh whole lattice = spin1 + spin2
+    Eigen::MatrixXd M_mat_sample = Eigen::MatrixXd::Zero(Nx, Ny); // The total magetic moment of theh whole lattice = spin1 + spin2 of this sample
 
     init_conf(spin_conf, Nx, Ny, rng);
     spin_lattice[0] = S * spin_conf;
@@ -73,7 +89,7 @@ int main(int argc, char* argv[]) {
 
     // Thermolazition to equilition
     std::cout << "################################# Thermolization #########################################" << std::endl;
-    for (int thermo_step = 0; thermo_step <= Num_thermo; thermo_step++) {
+    for (int thermo_step = 0; thermo_step <= (Num_thermo - 1); thermo_step++) {
         sweep(spin_lattice, Nx, Ny, params, rng);
         if ((thermo_step % 5000) == 0)  {
             std::cout << "Thermo step: " << thermo_step << std::endl;
@@ -91,10 +107,14 @@ int main(int argc, char* argv[]) {
 
     // MC process
     std::cout << "################################# MC Sampling ############################################" << std::endl;
-    for (int step = 0; step <= Num_sample; step++) {
+    for (int step = 0; step <= (Num_sample - 1); step++) {
         sweep(spin_lattice, Nx, Ny, params, rng);
         // After casting, the original type of Matrix will not change;
-        M =  spin_lattice[0].cast<double>() +  spin_lattice[1].cast<double>() + M;
+        M_mat_sample =  spin_lattice[0].cast<double>() +  spin_lattice[1].cast<double>();
+        M_mat =  M_mat_sample + M_mat;
+        Ms_sample =  ( M_mat_sample.sum() / (Nx*Ny) );
+        Ms +=  Ms_sample;
+        Ms2 +=  std::pow(Ms_sample, 2);
         if ((step % 5000) == 0)  {
             std::cout << "Thermo step: " << step << std::endl;
         }
@@ -109,17 +129,25 @@ int main(int argc, char* argv[]) {
     }    
     std::cout << "################################ Sampling finished #######################################" << std::endl;
 
+    // calculate  the output values
+    Ms = Ms / Num_sample;
+    Ms2 = Ms2 / Num_sample;  // mean value of squre of magnetization  of eche sampling
+    M_mat = M_mat / Num_sample;
+    errorbar = Ms2 - std::pow(Ms, 2);
+    Ms = std::abs(Ms);
+    std::cout << errorbar << std::endl;
+    errorbar  = std::pow(errorbar, 0.5);
+    
+
     std::string M_mat_folder = "./M_mat/";
     std::string M_mat_file = M_mat_folder +  "M_mat_" + std::to_string(T);
     std::string conmand = "mkdir -p " + M_mat_folder;
     int mkdir = std::system(conmand.c_str());
     std::ofstream fob(M_mat_file);
-    M = M / Num_sample;
-    fob << M << std::endl;
-    double Ms = M.sum() / (Nx * Ny);
+    fob << M_mat << std::endl;
 
     std::ofstream Ms_file("Ms.dat", std::ios::app);
-    Ms_file << T << "    " << std::abs(Ms) << std::endl;
+    Ms_file << T << "    " << std::abs(Ms) <<  "    "  << errorbar << std::endl;
 
     return 0;
 }

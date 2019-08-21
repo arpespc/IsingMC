@@ -8,3 +8,5 @@ Num_thermo : 1000
 Num_sample : 1000
 snapshot    :  0
 snap_interval : 100
+output_chi : 1
+output_error : 1
