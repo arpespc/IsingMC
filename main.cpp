@@ -51,7 +51,6 @@ int main(int argc, char* argv[]) {
         int mkdir = std::system(conmand.c_str());
         snap_interval = (int) params["snap_interval"];
     }
-    const bool output_chi = params["output_chi"];
     const double num_site =  Nx * Ny;
 
     // out put the basic input infomation
@@ -111,7 +110,7 @@ int main(int argc, char* argv[]) {
         // After casting, the original type of Matrix will not change;
         M_mat_sample =  spin_lattice[0].cast<double>() +  spin_lattice[1].cast<double>();
         M_mat =  M_mat_sample + M_mat;
-        Ms_sample =  ( M_mat_sample.sum() / (Nx*Ny) );
+        Ms_sample =   M_mat_sample.sum() / num_site ;
         Ms +=  Ms_sample;
         Ms2 +=  std::pow(Ms_sample, 2);
         if ((step % 5000) == 0)  {
