@@ -52,7 +52,6 @@ int main(int argc, char* argv[]) {
         snap_interval = (int) params["snap_interval"];
     }
     const bool output_chi = params["output_chi"];
-    const bool output_error = params["output_error"];
     const double num_site =  Nx * Ny;
 
     // out put the basic input infomation
@@ -130,12 +129,12 @@ int main(int argc, char* argv[]) {
     std::cout << "################################ Sampling finished #######################################" << std::endl;
 
     // calculate  the output values
-    Ms = Ms / Num_sample;
-    Ms2 = Ms2 / Num_sample;  // mean value of squre of magnetization  of eche sampling
     M_mat = M_mat / Num_sample;
+    Ms = Ms / Num_sample;
+    Ms = std::abs(Ms); // just for plot, because of the Z2  symmetry of spin
+    Ms2 = Ms2 / Num_sample;  // mean value of squre of magnetization  of eche sampling
     errorbar = Ms2 - std::pow(Ms, 2);
-    Ms = std::abs(Ms);
-    std::cout << errorbar << std::endl;
+    chi = beta * errorbar;
     errorbar  = std::pow(errorbar, 0.5);
     
 
@@ -147,7 +146,7 @@ int main(int argc, char* argv[]) {
     fob << M_mat << std::endl;
 
     std::ofstream Ms_file("Ms.dat", std::ios::app);
-    Ms_file << T << "    " << std::abs(Ms) <<  "    "  << errorbar << std::endl;
+    Ms_file << T << "    " << std::abs(Ms) <<  "    " << "      " << chi << errorbar << std::endl;
 
     return 0;
 }
