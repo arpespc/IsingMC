@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
     fob << M_mat << std::endl;
 
     std::ofstream Ms_file("Ms.dat", std::ios::app);
-    Ms_file << T << "    " << std::abs(Ms) <<  "    " << "      " << chi << errorbar << std::endl;
+    Ms_file << T << "    " << std::abs(Ms) <<  "    " <<  errorbar << "      " << chi << std::endl;
 
     return 0;
 }
