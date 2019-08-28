@@ -4,8 +4,11 @@ J1 : 0.00174
 J2 : 0.00086
 T : 0.000001
 S : 3
-Num_thermo : 1000
-Num_sample : 1000
+Num_thermo : 600000
+Num_sample : 300000
 snapshot    :  0
 snap_interval : 100
+Anneal_blow_T : 61    # anneal blow 61 K
+Anneal_T : 300
+Anneal_num : 10000   
 output_chi : 0

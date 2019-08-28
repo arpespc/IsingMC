@@ -1,4 +1,4 @@
-#include <boost/random.hpp>
+#define _STRING_H_
 #include "header.hpp"
 
 void init_conf(Eigen::MatrixXi &spin_conf, const int Nx, const int Ny, boost::random::mt19937 & seed_spin) {

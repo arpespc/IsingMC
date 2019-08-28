@@ -1,3 +1,7 @@
+#include <boost/algorithm/string.hpp>
+#include <map>
+#include <fstream>
+#include <vector>
 #include "header.hpp"
 
 void read_para( std::map<std::string, double> &params){

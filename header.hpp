@@ -1,11 +1,17 @@
-#include <iostream>
-#include <fstream>
-#include <boost/algorithm/string.hpp>
+#ifndef _RANDOM_H_
+#define _RANDOM_H_
 #include <boost/random.hpp>
-#include <vector>
-#include <map>
+#endif
+
+#ifndef _STRING_H_
+#define _STRING_H_
 #include <string>
+#endif
+
+#ifndef _EIGEN_H_
+#define _EIGEN_H_
 #include <Eigen/Eigen>
+#endif
 
 void read_para(std::map<std::string, double> &params);
 // void init_conf(Eigen::MatrixXi &spin_conf, const int Nx, const int Ny, );

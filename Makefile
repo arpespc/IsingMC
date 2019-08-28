@@ -1,4 +1,5 @@
-CXX = g++ -O3 -std=c++11 -mavx -mfma
+#CXX = g++ -O3 -std=c++11 -mavx -mfma
+CXX = icpc  -O3 -std=c++11 
 #CXX = g++ -O3 -std=c++11 -fopenmp -mavx -mfma
 #CXX = clang++-8 -O3
 #CXX = g++ -g
