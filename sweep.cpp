@@ -1,6 +1,6 @@
 #include "header.hpp"
 
-void sweep(std::array<Eigen::MatrixXi, 2> & spin_lattice, const int Nx, const int Ny, std::map<std::string, double> & params,  boost::random::mt19937 & rng) {
+void sweep(std::array<Eigen::MatrixXd, 2> & spin_lattice, const int Nx, const int Ny, std::map<std::string, double> & params,  boost::random::mt19937 & rng) {
     double beta = params["beta"];
     for (int s = 0; s <= 1; s++) {
         for (int i = 0; i <= Nx - 1; i++) {

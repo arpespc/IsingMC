@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     const int Ny = (int) params["Ny"]; // number of size
     const long Num_thermo = params["Num_thermo"];
     const long Num_sample = params["Num_sample"];
-    const unsigned S = params["S"]; // muB
+    const double S = params["S"]; // muB
     double t = 0;
     if (vm.count("temp")) {
         t = vm["temp"].as<double>();
@@ -79,14 +79,14 @@ int main(int argc, char* argv[]) {
     double errorbar = 0;
 
     // Initial Spin  Configure
-    std::array<Eigen::MatrixXi, 2> spin_lattice;
-    Eigen::MatrixXi spin_conf = Eigen::MatrixXi::Zero(Nx, Ny);
-    Eigen::MatrixXi spin_conf1 = Eigen::MatrixXi::Ones(Nx, Ny); // The spin configuration of of first sub lattice
-    Eigen::MatrixXi spin_conf2 = Eigen::MatrixXi::Ones(Nx, Ny); // The spin configuration of the second sub lattice
+    std::array<Eigen::MatrixXd, 2> spin_lattice;
+    Eigen::MatrixXd spin_conf = Eigen::MatrixXd::Zero(Nx, Ny);
+    Eigen::MatrixXd spin_conf1 = Eigen::MatrixXd::Ones(Nx, Ny); // The spin configuration of of first sub lattice
+    Eigen::MatrixXd spin_conf2 = Eigen::MatrixXd::Ones(Nx, Ny); // The spin configuration of the second sub lattice
     Eigen::MatrixXd M_mat_sample = Eigen::MatrixXd::Zero(Nx, Ny); // The total magetic moment of theh whole lattice = spin1 + spin2 of this sample
 
     init_conf(spin_conf, Nx, Ny, rng);
-    spin_lattice[0] = S * spin_conf;
+    spin_lattice[0] =  S * spin_conf;
     init_conf(spin_conf, Nx, Ny, rng);
     spin_lattice[1] = S * spin_conf;
 
